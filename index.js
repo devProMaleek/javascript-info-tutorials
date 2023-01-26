@@ -567,14 +567,61 @@ function readData() {
 
 // readData();
 
-fetch('/article/promise-chaining/user.json')
-  // .then below runs when the remote server responds
-  .then(function (response) {
-    // response.text() returns a new promise that resolves with the full response text
-    // when it loads
-    return response.json();
-  })
-  .then(function (json) {
-    // ...and here's the content of the remote file
-    alert(json); // {"name": "iliakan", "isAdmin": true}
-  });
+// fetch('/article/promise-chaining/user.json')
+//   // .then below runs when the remote server responds
+//   .then(function (response) {
+//     // response.text() returns a new promise that resolves with the full response text
+//     // when it loads
+//     return response.json();
+//   })
+//   .then(function (json) {
+//     // ...and here's the content of the remote file
+//     alert(json); // {"name": "iliakan", "isAdmin": true}
+//   });
+
+// fetch('https://no-such-server.blabla') // rejects
+//   .then(
+//     (response) => response.json(),
+//     (err) => alert(err)
+//   );
+
+// the execution: catch -> catch
+// new Promise((resolve, reject) => {
+//   throw new Error('Whoops!');
+// })
+//   .catch(function (error) {
+//     // (*)
+
+//     if (error instanceof URIError) {
+//       // handle it
+//     } else {
+//       alert("Can't handle such error");
+
+//       throw error; // throwing this or another error jumps to the next catch
+//     }
+//   })
+//   .catch((error) => {
+//     // (**)
+
+//     alert(`The unknown error has occurred: ${error}`);
+//     // don't return anything => execution goes the normal way
+//   });
+
+// PROMISE APIS
+
+let urls = [
+  'https://api.github.com/users/iliakan',
+  'https://api.github.com/users/remy',
+  'https://api.github.com/users/jeresig',
+];
+
+// map every url to the promise of the fetch
+let requests = urls.map((url) => fetch(url));
+
+// Promise.all waits until all jobs are resolved
+Promise.all(requests)
+  .then((responses) =>
+    Promise.all(responses.map((response) => response.json()))
+  )
+  .then((users) => users.forEach((user) => alert(user.name)))
+  .catch((err) => alert(err.message));
