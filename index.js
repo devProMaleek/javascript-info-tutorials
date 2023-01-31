@@ -619,9 +619,58 @@ let urls = [
 let requests = urls.map((url) => fetch(url));
 
 // Promise.all waits until all jobs are resolved
-Promise.all(requests)
-  .then((responses) =>
-    Promise.all(responses.map((response) => response.json()))
-  )
-  .then((users) => users.forEach((user) => alert(user.name)))
-  .catch((err) => alert(err.message));
+// Promise.all(requests)
+//   .then((responses) =>
+//     Promise.all(responses.map((response) => response.json()))
+//   )
+//   .then((users) => users.forEach((user) => alert(user.name)))
+//   .catch((err) => alert(err.message));
+
+// GENERATOR FUNCTION
+
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+// let generator = generateSequence();
+// let one = generator.next();
+// let two = generator.next();
+// let three = generator.next();
+// let done = generator.next();
+// alert(generator);
+// alert(JSON.stringify(one));
+// alert(JSON.stringify(two));
+// alert(JSON.stringify(three));
+// alert(JSON.stringify(done));
+
+// YIELD IS VERY POWERFUL
+// function* gen() {
+//   let ask1 = yield '2 + 2 = ?';
+//   alert(ask1);
+//   let ask2 = yield '3 * 3 = ?';
+//   alert(ask2);
+// }
+
+// let generator = gen();
+
+// alert(generator.next().value);
+// alert(generator.next(4).value);
+// alert(generator.next(9).done);
+
+// GENERATOR.THROW
+function* gen() {
+  try {
+    let result = yield '2 + 2 = ?';
+    alert(
+      'The execution does not reach here, because the exception is thrown above'
+    );
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+let generator = gen()
+let question = generator.next().value
+generator.throw(new Error("The answer is not found in my database") )
