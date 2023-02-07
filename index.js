@@ -671,31 +671,31 @@ function* gen() {
   }
 }
 
-let generator = gen();
-let question = generator.next().value;
-generator.throw(new Error('The answer is not found in my database'));
+// let generator = gen();
+// let question = generator.next().value;
+// generator.throw(new Error('The answer is not found in my database'));
 
-// ASYNC GENERATORS: PAGINATED DATA
-async function* fetchCommits(repo) {
-  let url = `https://api.github.com/repos/${repo}/commits`;
+// // ASYNC GENERATORS: PAGINATED DATA
+// async function* fetchCommits(repo) {
+//   let url = `https://api.github.com/repos/${repo}/commits`;
 
-  while (url) {
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'Our script' },
-    });
+//   while (url) {
+//     const response = await fetch(url, {
+//       headers: { 'User-Agent': 'Our script' },
+//     });
 
-    const body = await response.json();
+//     const body = await response.json();
 
-    let nextPage = response.headers.get('Link').match(/<(.*?)>; rel="next"/);
+//     let nextPage = response.headers.get('Link').match(/<(.*?)>; rel="next"/);
 
-    nextPage = nextPage?.[1];
-    url = nextPage;
+//     nextPage = nextPage?.[1];
+//     url = nextPage;
 
-    for (let commit of body) {
-      yield commit;
-    }
-  }
-}
+//     for (let commit of body) {
+//       yield commit;
+//     }
+//   }
+// }
 
 (async () => {
   let count = 0;
@@ -709,3 +709,55 @@ async function* fetchCommits(repo) {
     }
   }
 })();
+
+let target = {};
+
+let proxy = new Proxy(target, {});
+
+proxy.test = 10;
+// alert(target.test);
+
+// alert(proxy.test);
+
+// for (let key in target) {
+//   alert(target[key]);
+// }
+
+// Default value with “get” trap
+let dictionary = {
+  Hello: 'Hola',
+  Bye: 'Adios',
+};
+
+dictionary = new Proxy(dictionary, {
+  get(target, phrase) {
+    if (phrase in target) {
+      return target[phrase];
+    } else {
+      return phrase;
+      target, prop, value;
+    }
+  },
+});
+
+// alert(dictionary['Welcome to Proxy']);
+
+// Validation with “set” trap
+
+let numbers = [];
+numbers = new Proxy(numbers, {
+  set(target, prop, value) {
+    if (typeof value === 'number') {
+      target[prop] = value;
+      return true;
+    } else {
+      return false;
+    }
+  },
+});
+
+numbers.push(1); // added successfully
+numbers.push(2); // added successfully
+alert('Length is: ' + numbers.length); // 2
+
+numbers.push('test');
