@@ -758,6 +758,133 @@ numbers = new Proxy(numbers, {
 
 numbers.push(1); // added successfully
 numbers.push(2); // added successfully
-alert('Length is: ' + numbers.length); // 2
+// alert('Length is: ' + numbers.length); // 2
 
-numbers.push('test');
+// numbers.push('test');
+
+// Iteration with “ownKeys” and “getOwnPropertyDescriptor”
+
+let user = {
+  name: 'Abdulmalik',
+  age: 30,
+  _password: 'Maleekbaryor',
+};
+
+// user = new Proxy(user, {
+//   ownKeys(target) {
+//     return Object.keys(target).filter((key) => !key.startsWith('_'));
+//   },
+// });
+
+// for (let key in user) alert(key); // name, then: age
+
+// same effect on these methods:
+// alert(Object.values(user));
+// alert(Object.keys(user)); // name,age
+
+// Protected properties with “deleteProperty” and other traps
+
+let proxyHandler = {
+  get(target, prop) {
+    if (prop.startsWith('_')) {
+      throw new Error('Access denied');
+    }
+    let value = target[prop];
+    return typeof value === 'function' ? value.bind(target) : value;
+  },
+
+  set(target, prop, value) {
+    if (prop.startsWith('_')) {
+      throw new Error('Access denied');
+    } else {
+      target[prop] = value;
+      return true;
+    }
+  },
+
+  delete(target, prop) {
+    if (prop.startsWith('_')) {
+      throw new Error('Access denied');
+    } else {
+      delete target[prop];
+      return true;
+    }
+  },
+
+  ownKeys(target) {
+    // to intercept property list
+    return Object.keys(target).filter((key) => !key.startsWith('_'));
+  },
+};
+
+user = new Proxy(user, proxyHandler);
+
+// try {
+//   alert(user._password);
+// } catch (error) {
+//   alert(error.message);
+// }
+
+// try {
+//   user._password = 'test'; // Error: Access denied
+// } catch (e) {
+//   alert(e.message);
+// }
+
+// // "deleteProperty" doesn't allow to delete _password
+// try {
+//   delete user._password; // Error: Access denied
+// } catch (e) {
+//   alert(e.message);
+// }
+
+// // "ownKeys" filters out _password
+// for (let key in user) alert(key);
+
+// “In range” with “has” trap
+
+let range = {
+  start: 1,
+  end: 10,
+};
+
+range = new Proxy(range, {
+  has(target, prop) {
+    return prop >= target.start && prop <= target.end;
+  },
+});
+
+// alert(1 in range);
+// alert(70 in range);
+
+// Wrapping functions: "apply"
+
+function delay(f, ms) {
+  return new Proxy(f, {
+    apply(target, thisArgs, args) {
+      setTimeout(() => target.apply(thisArgs, args), ms);
+    },
+  });
+}
+
+function sayHi(user) {
+  alert(`Hello, ${user}`);
+}
+
+sayHi = delay(sayHi, 3000);
+
+alert(sayHi.length);
+// alert(sayHi('Abdulmalik'));
+
+// Proxying a getter and using Reflect
+
+// Eval
+let a = 1;
+
+function f() {
+  let a = 2;
+
+  eval('alert(a)'); // 2
+}
+
+f();
