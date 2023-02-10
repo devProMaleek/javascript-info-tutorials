@@ -887,4 +887,15 @@ function f() {
   eval('alert(a)'); // 2
 }
 
-f();
+// f();
+
+function sum(a, b) {
+  return a + b;
+}
+
+let _ = require('lodash');
+
+let curriedSum = _.curry(sum); // using _.curry from lodash library
+
+// alert(curriedSum(1, 2)); // 3, still callable normally
+alert(curriedSum(1)(2));
